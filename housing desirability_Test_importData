@@ -1,0 +1,35 @@
+import json
+from pprint import pprint
+import pandas as pd
+
+json_strings = []
+try:
+    with open("test.json", 'r') as f:
+        for line in f:
+            # Traiter la ligne et ainsi de suite ...
+            json_strings.append(line) 
+except UnicodeDecodeError:
+    print("There was an error encrypting...")
+    source = ""
+    
+print("quantité de lots data intégrés : ",len(json_strings))
+house_list = []
+i=2
+j=0
+batch_size = 3
+while i<len(json_strings):
+    data = json.loads(json_strings[i])
+    
+    while j<batch_size:
+        house = [data['response']['docs'][j]['room_configuration'],data['response']['docs'][j]['build_year']]
+        house_list.append(house)
+        j=j+1
+    j=0
+    i=i+1
+i=0
+k=0
+while k<len(house_list):
+    print(house_list[k])
+    k=k+1
+    
+print(house_list[1][1])
