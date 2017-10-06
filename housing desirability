@@ -1,0 +1,17 @@
+import json
+from pprint import pprint
+import pandas as pd
+
+json_strings = []
+with open("daily_sales_21_Sep_2017_20_37_tz0000 (1).json", 'r') as f:
+    for line in f:
+        try:
+            # Traiter la ligne et ainsi de suite ...
+            json_strings.append(line) 
+        except UnicodeDecodeError:
+            print("There was an error encrypting...")
+            source = ""
+    
+print(len(json_strings))
+print(json_strings[0])
+data=json.loads(json_strings[2])
