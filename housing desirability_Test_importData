@@ -4,7 +4,7 @@ import pandas as pd
 
 json_strings = []
 try:
-    with open("test.json", 'r') as f:
+    with open("daily_sales_21_Sep_2017_20_37_tz0000 (1).json", 'r', encoding="utf8") as f:
         for line in f:
             # Traiter la ligne et ainsi de suite ...
             json_strings.append(line) 
@@ -14,22 +14,19 @@ except UnicodeDecodeError:
     
 print("quantité de lots data intégrés : ",len(json_strings))
 house_list = []
-i=2
+i=0
 j=0
-batch_size = 3
+batch_size = 120
 while i<len(json_strings):
     data = json.loads(json_strings[i])
-    
     while j<batch_size:
-        house = [data['response']['docs'][j]['room_configuration'],data['response']['docs'][j]['build_year']]
+        house = [data['response']['docs'][j]['published'],data['response']['docs'][j]['rooms']]
         house_list.append(house)
         j=j+1
     j=0
-    i=i+1
+    i=i+2
 i=0
 k=0
-while k<len(house_list):
+while k<2:
     print(house_list[k])
     k=k+1
-    
-print(house_list[1][1])
