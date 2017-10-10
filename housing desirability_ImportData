@@ -39,3 +39,60 @@ print("erreur relative dans l'extraction de donnée :",nb_error/len(house_list))
       
 for k in range(0,20):
     print(house_list[k])
+
+training_length = int(len(house_list)*0.8)
+print("nombre de données servant au training de la machine learning :",training_length)
+
+training_dataset = house_list[:training_length]
+test_dataset = house_list[training_length:]
+print(training_dataset[training_length-1])
+print(test_dataset[0])
+print(training_dataset[0])
+
+Y_training=[]
+X_training=[]
+for i in range (0,len(training_dataset)):
+    Y_training.append(training_dataset[i][0])
+    for j in range(0,nb_features):
+        f=[]
+        f.append(training_dataset[i][j+1])
+    X_training.append(f)
+print(Y_training[0])
+print(X_training[0])
+
+X_training = np.array(X_training)
+Y_training = np.array(Y_training)
+print(X_training[:6])
+print(Y_training)
+
+X_training = X_training.reshape(len(X_training),nb_features)
+Y_training = Y_training.reshape(len(Y_training),1)
+print(X_training)
+print(Y_training)
+
+X=X_training[:6]
+print(X)
+Y=Y_training[:6]
+print(Y)
+
+# Fit regression model
+regr_1 = DecisionTreeRegressor(max_depth=2)
+regr_2 = DecisionTreeRegressor(max_depth=5)
+regr_1.fit(X, Y)
+regr_2.fit(X, Y)
+Y1 = regr_1.predict(X)
+Y2= regr_2.predict(X)
+error=(Y1-Y)/Y
+error2=(Y2-Y)/Y
+
+from math import sqrt
+DecisionTreeRegressor(max_depth=2).get_params()
+error=error*error
+error2=error2*error2
+error2_tot=sum(sum(error2))
+error_tot=sum(sum(error))
+least_square1=sqrt(error_tot)
+least_square2=sqrt(error2_tot)
+print("error with least square method for param depth = 2 :",least_square1)
+print("error with least square method for param depth = 5 :",least_square2)
+print(nb_features)
