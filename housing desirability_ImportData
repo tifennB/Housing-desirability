@@ -1,0 +1,41 @@
+import json
+from pprint import pprint
+import pandas as pd
+
+#variables
+json_strings = []
+features = ['size','price']
+batch_size = 120
+nb_error=0
+house_list = []
+
+#extract data
+try:
+    with open("daily_sales_21_Sep_2017_20_37_tz0000 (1).json", 'r', encoding="utf8") as f:
+        for line in f:
+            # Traiter la ligne et ainsi de suite ...
+            json_strings.append(line) 
+except UnicodeDecodeError:
+    print("There was an error encrypting...")
+    source = ""
+    
+print("quantité de lots data intégrés : ",len(json_strings)/2)
+
+#clean data
+
+for i in range(0,206):
+    data = json.loads(json_strings[2*i])
+    for j in range(0,batch_size):
+        try:
+            house = []
+            for key in features:
+                house.append(data['response']['docs'][j][key])
+            house_list.append(house)
+        except KeyError:
+            nb_error = nb_error+1
+print(nb_error)
+print(len(house_list))
+print("erreur relative dans l'extraction de donnée :",nb_error/len(house_list))
+      
+for k in range(0,20):
+    print(house_list[k])
