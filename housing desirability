@@ -1,17 +1,95 @@
 import json
 from pprint import pprint
 import pandas as pd
+import numpy as np
+from sklearn.tree import DecisionTreeRegressor
+import matplotlib.pyplot as plt
 
+#variables
 json_strings = []
-with open("daily_sales_21_Sep_2017_20_37_tz0000 (1).json", 'r') as f:
-    for line in f:
-        try:
+features = ['price','size']
+nb_features = len(features)-1
+batch_size = 120
+nb_error=0
+house_list = []
+
+#extract data
+try:
+    with open("daily_sales_21_Sep_2017_20_37_tz0000 (1).json", 'r', encoding="utf8") as f:
+        for line in f:
             # Traiter la ligne et ainsi de suite ...
             json_strings.append(line) 
-        except UnicodeDecodeError:
-            print("There was an error encrypting...")
-            source = ""
+except UnicodeDecodeError:
+    print("There was an error encrypting...")
+    source = ""
     
-print(len(json_strings))
-print(json_strings[0])
-data=json.loads(json_strings[2])
+print("quantité de lots data intégrés : ",len(json_strings)/2)
+
+#clean data
+
+for i in range(0,206):
+    data = json.loads(json_strings[2*i])
+    for j in range(0,batch_size):
+        try:
+            house = []
+            for key in features:
+                house.append(data['response']['docs'][j][key])
+            house_list.append(house)
+        except KeyError:
+            nb_error = nb_error+1
+print(nb_error)
+print(len(house_list))
+print("erreur relative dans l'extraction de donnée :",nb_error/len(house_list))
+      
+for k in range(0,20):
+    print(house_list[k])
+
+%matplotlib inline
+
+training_length = int(len(house_list)*0.8)
+print("nombre de données servant au training de la machine learning :",training_length)
+
+training_dataset = house_list[:training_length]
+test_dataset = house_list[training_length:]
+print(training_dataset[training_length-1])
+print(test_dataset[0])
+print(training_dataset[0])
+print(nb_features)
+
+Y_training=[]
+X_training=[]
+Y_testing=[]
+X_testing=[]
+for i in range (0,len(training_dataset)):
+    Y_training.append(training_dataset[i][0])
+    for j in range(0,nb_features):
+        f=[]
+        f.append(training_dataset[i][j+1])
+    X_training.append(f)
+for i in range (0,len(test_dataset)):
+    Y_testing.append(test_dataset[i][0])
+    for j in range(0,nb_features):
+        f=[]
+        f.append(test_dataset[i][j+1])
+    X_testing.append(f)
+    
+X_training = np.array(X_training)
+Y_training = np.array(Y_training)
+print(X_training[:6])
+print(Y_training)
+
+X_training = X_training.reshape(len(X_training),nb_features)
+Y_training = Y_training.reshape(len(Y_training),1)
+print(X_training)
+print(Y_training)
+
+X_training.shape
+
+for k in range(1,2):
+    regr_1 = DecisionTreeRegressor(max_depth=k)
+    regr_1.fit(X_training, Y_training)
+    Y1 = regr_1.predict(X_training)
+    Y2= regr_1.predict(X_testing)
+    error_training = np.sum((Y1-Y_training)*(Y1-Y_training))
+    error_testing = np.sum((Y1-Y_testing)*(Y1-Y_testing))
+    print(error_training, "  ",error_testing)
